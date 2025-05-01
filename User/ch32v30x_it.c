@@ -13,6 +13,7 @@
 
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void ADC1_2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 /*********************************************************************
  * @fn      NMI_Handler
@@ -23,9 +24,9 @@ void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
  */
 void NMI_Handler(void)
 {
-  while (1)
-  {
-  }
+	while (1)
+	{
+	}
 }
 
 /*********************************************************************
@@ -37,10 +38,27 @@ void NMI_Handler(void)
  */
 void HardFault_Handler(void)
 {
-  NVIC_SystemReset();
-  while (1)
-  {
-  }
+	NVIC_SystemReset();
+	while (1)
+	{
+	}
 }
 
+/*********************************************************************
+ * @fn      ADC1_2_IRQHandler
+ *
+ * @brief   This function handles analog wathdog exception.
+ *
+ * @return  none
+ */
+void ADC1_2_IRQHandler(void)
+{
+	if(ADC_GetITStatus( ADC1, ADC_IT_EOC))
+	{
 
+		printf( "ADC IUpt = \%d\r\n", ADC_GetConversionValue(ADC1) );
+
+	}
+	
+	ADC_ClearITPendingBit( ADC1, ADC_IT_EOC); 
+}

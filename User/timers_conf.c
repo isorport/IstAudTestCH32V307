@@ -54,7 +54,7 @@ void TIM4_PWMOut_init()
  *          psc - the prescaler value.
  *          ccp - the pulse value.
  */
-void TIM9_PWMOut_Init( u16 arr, u16 psc, u16 ccp )
+void TIM9_PWMOut_init( u16 arr, u16 psc, u16 ccp )
 {
 	TIM_OCInitTypeDef TIM_OCInitStructure={0};
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure={0};

@@ -21,6 +21,8 @@ void task1_task(void *pvParameters)     // task1 handler
 	u8 cnt = 0;
 	while(1)
 	{
+		Start_ADC_conv();
+
 		if (cnt > 30) cnt = 0;
 		if (cnt < 11)
 		{
@@ -70,8 +72,9 @@ int main(void)
 	printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 	printf("FreeRTOS Kernel Version:%s\r\n",tskKERNEL_VERSION_NUMBER);
 
-	init_gpio();
-	TIM9_PWMOut_Init( 10-1, 9600-1, 5 );  // 10kHz / 10 = 1kHz, 96000000 / 9600 = 10kHz, 50% 
+	GPIO_init();
+	TIM9_PWMOut_init( 10-1, 9600-1, 5 );  // 10kHz / 10 = 1kHz, 96000000 / 9600 = 10kHz, 50% 
+	ADC_init();
 
 	TIM_SetCompare1(TIM9, 3);  // 30% (PA2) R
 	TIM_SetCompare2(TIM9, 7);  // 70% (PA3) G
