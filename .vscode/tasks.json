@@ -1,0 +1,125 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+		{
+			"type": "cmake",
+			"label": "CMake: clean",
+			"command": "clean",
+			"detail": "CMake template clean task"
+		},
+		{
+            "type": "cmake",
+            "label": "CMake: build",
+            "command": "build",
+            "targets": [
+                "all"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "CMake template build task"
+        },
+		{
+            "type": "cmake",
+            "label": "CMake: build_ram",
+            "command": "build",
+            "targets": [
+                "all"
+            ],
+            "group": "build",
+			"options": {
+				"env": {
+					"RAM_VAR": "True"
+				}
+			},			
+            "problemMatcher": [],
+            "detail": "CMake template build to RAM task"
+        },
+        {
+			"label": "flash_mcu",
+			"type": "shell",
+			"command": "D:\\_Install\\_Microcontroller\\_CH32\\CH32_tools\\wlink-win-x86\\wlink",
+			"args": [
+				"flash",
+				"--chip",
+				"ch32v307",
+				"./build/${workspaceFolderBasename}.elf"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+        {
+			"label": "2ram_mcu",
+			"type": "shell",
+			"command": "C:\\MounRiver\\MounRiver_Studio2\\resources\\app\\resources\\win32\\components\\WCH\\OpenOCD\\OpenOCD\\bin\\openocd.EXE", // путь до прошивальщика
+			"args": [
+				"-f",
+				"C:\\MounRiver\\MounRiver_Studio2\\resources\\app\\resources\\win32\\components\\WCH\\OpenOCD\\OpenOCD\\bin\\wch-riscv.cfg",
+				"-c init",
+				"-c halt",
+				"-c load_image ./build/${workspaceFolderBasename}.elf",
+				"-c reset",
+				"-c exit",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "view_ram",
+			"type": "shell",
+			"command": "D:\\_Install\\_Microcontroller\\_CH32\\CH32_tools\\wlink-win-x86\\wlink",
+			"args": [
+				"dump",
+				"0x20000000",
+				"128",
+				"--chip",
+				"CH32V30X",
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			//"label": "to_ram",
+			"command": "cmake",
+			"args": [
+			  "--build",
+			  "${command:cmake.buildDirectory}",
+			  "--config",
+			  "${command:cmake.buildType}",
+			  "--target",
+			  "all"
+			],
+			"problemMatcher": [],
+			"options": {
+			  "env": {
+				"RAM_VAR": "True"
+			  }
+			},
+			"group": {
+			  "kind": "build",
+			  "isDefault": true
+			},
+			"detail": "Custom CMake build task with RAM_VAR environment variable"
+		},
+    ]
+}

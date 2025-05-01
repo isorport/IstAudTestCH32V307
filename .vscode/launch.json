@@ -1,0 +1,69 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "cortex-debug",
+            "request": "launch",    // Request type of configuration. Can be �launch� or �attach�
+            "cwd": "${workspaceRoot}", // Path of project
+            "executable": "./build/${workspaceFolderBasename}.elf",
+            "svdFile": "./Peripheral/CH32V307xx.svd",
+            "servertype": "openocd",
+            "configFiles": [
+                //"C:\\MounRiver\\MounRiver_Studio\\toolchain\\OpenOCD\\share\\openocd\\scripts\\interface\\wch-riscv.cfg"
+                "\\interface\\wch-riscv.cfg"
+            ],
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
+            "showDevDebugOutput": "parsed",
+            "runToEntryPoint": "SystemInit"     // начинает отладку с SystemInit
+            //"runToEntryPoint": "main"           // начинает отладку с main
+        },
+        {
+            "name": "Attach",
+            "type": "cortex-debug",
+            "request": "attach",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/${workspaceFolderBasename}.elf",
+            "svdFile": "./Peripheral/CH32V307xx.svd",
+            "servertype": "openocd",
+            "configFiles": [
+                //"C:\\MounRiver\\MounRiver_Studio\\toolchain\\OpenOCD\\share\\openocd\\scripts\\interface\\wch-riscv.cfg"
+                "\\interface\\wch-riscv.cfg"
+            ],
+            "showDevDebugOutput": "parsed",
+            "runToEntryPoint": "SystemInit"
+        },
+        {
+            "name": "Launch_ram",
+            "type": "cortex-debug",
+            "request": "launch",    // Request type of configuration. Can be “launch” or “attach”
+            "cwd": "${workspaceRoot}", // Path of project
+            "executable": "./build/${workspaceFolderBasename}.elf",
+            "svdFile": "./Peripheral/CH32V307xx.svd",
+            "servertype": "openocd",
+            "configFiles": [
+                //"C:\\MounRiver\\MounRiver_Studio\\toolchain\\OpenOCD\\share\\openocd\\scripts\\interface\\wch-riscv.cfg"
+                "C:\\MounRiver\\MounRiver_Studio2\\resources\\app\\resources\\win32\\components\\WCH\\OpenOCD\\OpenOCD\\bin\\wch-riscv.cfg",
+            ],
+            "postLaunchCommands": [
+                "stepi", // Must step before setting PC
+                "set $pc = 0x20000000", // Prepare to jump to the Application's Reset Handler
+                "stepi",
+                "break main"
+            ],
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
+            "showDevDebugOutput": "parsed",
+            "runToEntryPoint": "SystemInit"     // начинает отладку с SystemInit
+            //"runToEntryPoint": "main"           // начинает отладку с main
+        }
+    ]
+}

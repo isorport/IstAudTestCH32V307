@@ -1,0 +1,15 @@
+{
+	"cortex-debug.openocdPath.windows": "C:\\MounRiver\\MounRiver_Studio2\\resources\\app\\resources\\win32\\components\\WCH\\OpenOCD\\OpenOCD\\bin\\openocd.EXE",
+	"cortex-debug.armToolchainPath.windows": "C:\\MounRiver\\MounRiver_Studio2\\resources\\app\\resources\\win32\\components\\WCH\\Toolchain\\RISC-V Embedded GCC12\\bin",
+	"cortex-debug.armToolchainPrefix": "riscv-wch-elf",
+	"cortex-debug.variableUseNaturalFormat": false,
+	"C_Cpp.errorSquiggles": "disabled",
+	"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+	"cortex-debug.armToolchainPath": "",
+	"cortex-debug.openocdPath": "C:\\MounRiver\\MounRiver_Studio2\\resources\\app\\resources\\win32\\components\\WCH\\OpenOCD\\OpenOCD\\bin\\openocd.EXE",
+	"files.associations": {
+		"task.h": "c",
+		"gpio_conf.h": "c",
+		"timers_conf.h": "c"
+	},
+}

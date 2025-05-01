@@ -1,0 +1,100 @@
+
+#include "debug.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "gpio_conf.h"
+#include "timers_conf.h"
+#include "adc_conf.h"
+
+/* Global define */
+#define TASK1_TASK_PRIO     5
+#define TASK1_STK_SIZE      256
+#define TASK2_TASK_PRIO     5
+#define TASK2_STK_SIZE      256
+
+/* Global Variable */
+TaskHandle_t Task1Task_Handler;
+TaskHandle_t Task2Task_Handler;
+
+void task1_task(void *pvParameters)     // task1 handler
+{
+	u8 cnt = 0;
+	while(1)
+	{
+		if (cnt > 30) cnt = 0;
+		if (cnt < 11)
+		{
+			TIM_SetCompare1(TIM9, 10 - cnt);  // 30% (PA2) R
+		}
+		else if (cnt < 21)
+		{
+			TIM_SetCompare2(TIM9, 20 - cnt);  // 70% (PA3) G
+		}
+		else
+		{
+			TIM_SetCompare3(TIM9, 30 - cnt);  // 20% (PA4) B
+		}
+
+		printf("task1 entry - \%d\r\n", cnt++);
+		GPIO_TOGGLE_PIN(OUT_LED12_PORT, OUT_LED1_PIN);
+
+		vTaskDelay(50);
+	}
+}
+
+void task2_task(void *pvParameters)     // task2 handler
+{
+	while(1)
+	{
+		printf("task2 entry\r\n");
+		GPIO_TOGGLE_PIN(OUT_LED12_PORT, OUT_LED2_PIN);
+		vTaskDelay(500);
+	}
+}
+
+/************************** MAIN *************************************/
+int main(void)
+{
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	SystemCoreClockUpdate();
+
+
+
+
+
+	Delay_Init();
+	USART_Printf_Init(115200);
+		
+	printf("SystemClk:%d\r\n",SystemCoreClock);
+	printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
+	printf("FreeRTOS Kernel Version:%s\r\n",tskKERNEL_VERSION_NUMBER);
+
+	init_gpio();
+	TIM9_PWMOut_Init( 10-1, 9600-1, 5 );  // 10kHz / 10 = 1kHz, 96000000 / 9600 = 10kHz, 50% 
+
+	TIM_SetCompare1(TIM9, 3);  // 30% (PA2) R
+	TIM_SetCompare2(TIM9, 7);  // 70% (PA3) G
+	TIM_SetCompare3(TIM9, 2);  // 20% (PA4) B
+
+	/* create two task */
+	xTaskCreate((TaskFunction_t )task2_task,
+						(const char*    )"task2",
+						(uint16_t       )TASK2_STK_SIZE,
+						(void*          )NULL,
+						(UBaseType_t    )TASK2_TASK_PRIO,
+						(TaskHandle_t*  )&Task2Task_Handler);
+
+	xTaskCreate((TaskFunction_t )task1_task,
+					(const char*    )"task1",
+					(uint16_t       )TASK1_STK_SIZE,
+					(void*          )NULL,
+					(UBaseType_t    )TASK1_TASK_PRIO,
+					(TaskHandle_t*  )&Task1Task_Handler);
+	vTaskStartScheduler();
+
+	while(1)
+	{
+		printf("shouldn't run at here!!\n");
+	}
+}
