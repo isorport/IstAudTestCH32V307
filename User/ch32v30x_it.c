@@ -59,7 +59,8 @@ void HardFault_Handler(void)
 void ADC1_2_IRQHandler(void)
 {
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-  if (ADC_GetITStatus(ADC1, ADC_IT_EOC)) {
+	if (ADC_GetITStatus(ADC1, ADC_IT_EOC))
+	{
 
 	// printf( "ADC IUpt = \%d\r\n", ADC_GetConversionValue(ADC1) );
 	//  Отправляем уведомление задаче с передачей значения
@@ -67,7 +68,6 @@ void ADC1_2_IRQHandler(void)
 						(uint32_t)ADC_GetConversionValue(ADC1),		// Передаем 2 байта в младших битах
 						eSetValueWithOverwrite, 					// Перезаписываем предыдущее значение
 						&xHigherPriorityTaskWoken);
-  }
-
-  ADC_ClearITPendingBit(ADC1, ADC_IT_EOC);
+	}
+	ADC_ClearITPendingBit(ADC1, ADC_IT_EOC);
 }

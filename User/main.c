@@ -23,25 +23,26 @@ void task1_task(void *pvParameters)     // task1 handler
 	while(1)
 	{
 		Start_ADC_conv();
-
-		if (cnt > 30) cnt = 0;
-		if (cnt < 11)
+		/*
+		if (cnt > 3*STP_PWM) cnt = 0;
+		if (cnt < STP_PWM+1)
 		{
-			TIM_SetCompare1(TIM9, 10 - cnt);  // 30% (PA2) R
+			TIM_SetCompare1(TIM9, STP_PWM - cnt);		// (PA2) R
 		}
-		else if (cnt < 21)
+		else if (cnt < 2*STP_PWM+1)
 		{
-			TIM_SetCompare2(TIM9, 20 - cnt);  // 70% (PA3) G
+			TIM_SetCompare2(TIM9, 2*STP_PWM - cnt);		// (PA3) G
 		}
 		else
 		{
-			TIM_SetCompare3(TIM9, 30 - cnt);  // 20% (PA4) B
+			TIM_SetCompare3(TIM9, 3*STP_PWM - cnt);		// (PA4) B
 		}
+		*/
 
 		printf("task1 entry - \%d\r\n", cnt++);
 		GPIO_TOGGLE_PIN(OUT_LED12_PORT, OUT_LED1_PIN);
 
-		vTaskDelay(50);
+		vTaskDelay(20);
 	}
 }
 
@@ -72,7 +73,30 @@ void task2_task(void *pvParameters)     // task2 handler
 			uint16_t ADC_Value = (uint16_t)(ADC_Value32 & 0xFFFF);
 			
 			// Обрабатываем данные
-			printf("Получено значение: %u\n", ADC_Value);
+			 printf("Получено значение: %u\n", ADC_Value);
+			if (ADC_Value < TRANS_RG)
+			{
+				ADC_Value = STP_PWM * ADC_Value / (ADC_MAX / 3);
+				TIM_SetCompare1(TIM9, STP_PWM - ADC_Value);		// (PA2) R
+				TIM_SetCompare2(TIM9, ADC_Value);				// (PA3) G
+				TIM_SetCompare3(TIM9, 0);	
+			}
+			else if (ADC_Value < TRANS_GB)
+			{
+				ADC_Value = STP_PWM * (ADC_Value - TRANS_RG) / (ADC_MAX / 3);
+				TIM_SetCompare1(TIM9, 0);
+				TIM_SetCompare2(TIM9, STP_PWM - ADC_Value);		// G
+				TIM_SetCompare3(TIM9, ADC_Value);				// B
+			}
+			else
+			{
+				ADC_Value = STP_PWM * (ADC_Value - TRANS_GB) / (ADC_MAX / 3);
+				TIM_SetCompare3(TIM9, STP_PWM - ADC_Value);		// B
+				TIM_SetCompare1(TIM9, ADC_Value);				// R
+				TIM_SetCompare2(TIM9, 0);
+			}
+
+
 		}
 	}
 }
@@ -88,11 +112,11 @@ int main(void)
 	USART_Printf_Init(115200);
 		
 	printf("SystemClk:%d\r\n",SystemCoreClock);
-	printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
+	printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
 	printf("FreeRTOS Kernel Version:%s\r\n",tskKERNEL_VERSION_NUMBER);
 
 	GPIO_init();
-	TIM9_PWMOut_init( 10-1, 9600-1, 5 );  // 10kHz / 10 = 1kHz, 96000000 / 9600 = 10kHz, 50% 
+	TIM9_PWMOut_init(STP_PWM-1, 960-1, STP_PWM/2);  // 100kHz / 80 = 1,25 kHz, 96000000 / 960 = 100kHz, 50% 
 	ADC_init();
 
 	TIM_SetCompare1(TIM9, 0);  // 30% (PA2) R
