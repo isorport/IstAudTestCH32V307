@@ -13,13 +13,15 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "limits.h"
+//#include "queue.h"
 
 extern TaskHandle_t Task2Task_Handler;
+uint16_t RxData = 0;
 
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void ADC1_2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-
+void USART1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 /*********************************************************************
  * @fn      NMI_Handler
  *
@@ -70,4 +72,22 @@ void ADC1_2_IRQHandler(void)
 						&xHigherPriorityTaskWoken);
 	}
 	ADC_ClearITPendingBit(ADC1, ADC_IT_EOC);
+}
+
+/*********************************************************************
+ * @fn      USART2_IRQHandler
+ *
+ * @brief   This function handles USART2 global interrupt request.
+ *
+ * @return  none
+ */
+void USART1_IRQHandler(void)
+{
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {
+        RxData = USART_ReceiveData(USART1);
+
+            //USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);
+    }
+
 }
