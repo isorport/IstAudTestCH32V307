@@ -19,6 +19,8 @@ TaskHandle_t Task2Task_Handler;
 
 extern u_int16_t RxData;
 
+#define STP_SW	10
+
 void task1_task(void *pvParameters)     // task1 handler
 {
 	u8 cnt = 0;
@@ -28,18 +30,25 @@ void task1_task(void *pvParameters)     // task1 handler
 
 		if (RxData == 1)		// автоматический алгоритм переключения
 		{
-			if (cnt > 3*STP_PWM) cnt = 0;
-			if (cnt < STP_PWM+1)
+			if (cnt > 3*STP_SW) cnt = 0;
+			if (cnt < STP_SW+1)
 			{
-				TIM_SetCompare1(TIM9, STP_PWM - cnt);		// (PA2) R
+				TIM_SetCompare1(TIM9, STP_PWM);		// (PA2) R
+				TIM_SetCompare2(TIM9, 0);			// (PA3) G
+				TIM_SetCompare3(TIM9, 0);			// (PA4) B
+
 			}
-			else if (cnt < 2*STP_PWM+1)
+			else if (cnt < 2*STP_SW+1)
 			{
-				TIM_SetCompare2(TIM9, 2*STP_PWM - cnt);		// (PA3) G
+				TIM_SetCompare1(TIM9, 0);			// (PA2) R
+				TIM_SetCompare2(TIM9, STP_PWM);		// (PA3) G
+				TIM_SetCompare3(TIM9, 0);			// (PA4) B
 			}
 			else
 			{
-				TIM_SetCompare3(TIM9, 3*STP_PWM - cnt);		// (PA4) B
+				TIM_SetCompare1(TIM9, 0);			// (PA2) R
+				TIM_SetCompare2(TIM9, 0);			// (PA3) G
+				TIM_SetCompare3(TIM9, STP_PWM);		// (PA4) B
 			}
 			cnt++;
 		}
